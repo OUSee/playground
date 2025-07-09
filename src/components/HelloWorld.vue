@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <p>count</p>
+  <p>{{ count }}</p>
 </template>
 
 <style scoped>
