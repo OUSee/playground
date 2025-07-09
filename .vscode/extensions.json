@@ -1,3 +1,6 @@
 {
-  "recommendations": ["Vue.volar"]
+  "recommendations": [
+    "Vue.volar",
+    "misterj.vue-volar-extention-pack"
+  ]
 }
