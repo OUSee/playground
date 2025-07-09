@@ -6,23 +6,17 @@
     },
     {
       "path": "./tsconfig.node.json"
-    },
-    {
-      "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-          "@/*": [
-            "src/*"
-          ]
-        }
-      }
-    },
-    {
-      "compilerOptions": {
-        "types": [
-          "node"
-        ]
-      }
     }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "types": [
+      "node"
+    ]
+  }
 }
