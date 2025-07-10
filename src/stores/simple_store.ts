@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type {Ref} from 'vue'
 import type { User } from '@/types/types.d.ts'
 
 export const useSimlestore = defineStore('simple_store', () => {
