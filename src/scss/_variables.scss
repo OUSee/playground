@@ -16,6 +16,7 @@
 html {
     padding: 0;
     margin: 0;
+    overflow-x: hidden;
 }
 
 body {
@@ -27,6 +28,7 @@ body {
     width: 100%;
     --color: var(--net-color);
     background-color: var(--bg-color);
+    position: relative;
     background-image:
         linear-gradient(0deg,
             transparent 24%,
@@ -51,6 +53,7 @@ body {
     background-size: 5vh 5vh;
     animation: move 5s linear infinite;
     overflow-x: hidden;
+    padding-bottom: 70px;
 }
 
 .container {
@@ -65,6 +68,11 @@ body {
 a {
     color: var(--main-color);
     text-decoration: none;
+}
+
+.disabled {
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 h1,
@@ -237,4 +245,41 @@ div.blueprint {
         height: auto;
 
     }
+}
+
+button,
+.button {
+    background-color: transparent;
+    color: var(--main-color);
+    cursor: pointer;
+    width: fit-content;
+    padding: 10px 20px;
+    border: 1px solid var(--main-color);
+    border-radius: 25px;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        border: 1px dashed var(--main-color);
+    }
+}
+
+// inline styles
+.w-fit {
+    width: fit-content;
+}
+
+.mt-60 {
+    margin-top: 60px;
+}
+
+.mb-60 {
+    margin-bottom: 60px;
+}
+
+.ml-auto {
+    margin-left: auto;
 }

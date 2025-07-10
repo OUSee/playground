@@ -17,6 +17,7 @@ import './Header.scss'
                 <router-link to="/contact">Contact</router-link>
                 <router-link to="/test">Test</router-link>
             </nav>
+            <button class="burger">E</button>
         </div>
         <div class="container">
             <hr>

@@ -19,12 +19,23 @@ camera.position.z = 5
 camera.position.y = 1
 scene.add(camera);
 
-// object
+// object cube
 const cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
 const defaultMaterial  = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})
 const cube = new THREE.Mesh(cubeGeometry, defaultMaterial);
 cube.position.y = 1
 scene.add(cube);
+
+// object sphere
+const sphereGeometry = new THREE.SphereGeometry(1.5, 16, 8)
+const sphereMesh = new THREE.Mesh(sphereGeometry, defaultMaterial)
+sphereMesh.position.y = 1
+scene.add(sphereMesh)
+// const sphereMaterial = new THREE.MeshBasicMaterial({
+
+// })
+
+
 
 // grid 
 // const grid = new THREE.GridHelper(10, 10, 0x888888)
@@ -53,9 +64,12 @@ renderer.setClearColor(0x12438f, 0)
 function animate () {
     try{
         requestAnimationFrame(animate);
-        // cube.rotation.x += 0.05;
-        // cube.rotation.y += 0.05;
-        // cube.rotation.z += 0.05;
+        cube.rotation.x += 0.005;
+        cube.rotation.y += 0.005;
+        cube.rotation.z += 0.005;
+        sphereMesh.rotation.x -= 0.005;
+        sphereMesh.rotation.y -= 0.005;
+        sphereMesh.rotation.z -= 0.005;
         renderer.render(scene, camera);
     }catch(err){
         console.log(`=> err: ${err}`);
@@ -94,7 +108,53 @@ document?.addEventListener('mousemove', (e)=> {
     const rotationspeed = 0.01;
     cube.rotation.y += deltaMove.x * rotationspeed;
     cube.rotation.x += deltaMove.y * rotationspeed;
+    sphereMesh.rotation.y -= deltaMove.x * rotationspeed;
+    sphereMesh.rotation.x -= deltaMove.y * rotationspeed;
 })
+
+// touch
+
+let previousTouchPosition = { x: 0, y: 0 };
+
+handler?.addEventListener('touchstart', (event) => {
+  if (event.touches.length === 1) { // один палец
+    isDragging = true;
+    previousTouchPosition.x = event.touches[0].clientX;
+    previousTouchPosition.y = event.touches[0].clientY;
+  }
+});
+
+handler?.addEventListener('touchmove', (event) => {
+  if (!isDragging) return;
+  if (event.touches.length !== 1) return;
+
+  const touch = event.touches[0];
+  const deltaMove = {
+    x: touch.clientX - previousTouchPosition.x,
+    y: touch.clientY - previousTouchPosition.y
+  };
+
+  event.preventDefault();
+
+  const rotationSpeed = 0.01;
+
+  cube.rotation.y += deltaMove.x * rotationSpeed;
+  cube.rotation.x += deltaMove.y * rotationSpeed;
+  sphereMesh.rotation.y -= deltaMove.x * rotationSpeed;
+  sphereMesh.rotation.x -= deltaMove.y * rotationSpeed;
+
+  previousTouchPosition.x = touch.clientX;
+  previousTouchPosition.y = touch.clientY;
+  
+});
+
+handler?.addEventListener('touchend', () => {
+  isDragging = false;
+});
+
+handler?.addEventListener('touchcancel', () => {
+  isDragging = false;
+});
 
 // handler?.addEventListener('mouseleave', ()=>{
 //     isDragging = false

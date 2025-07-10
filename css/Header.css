@@ -2,6 +2,10 @@ header {
   background-color: var(--bg-color);
   padding-bottom: 10px;
   border-bottom: 1px solid var(--net-color);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
 }
 header > .container > hr {
   margin: 0;
@@ -16,6 +20,11 @@ header > .container > hr {
 .header .logo-wrapper {
   font-size: 20px;
   letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+.header .logo-wrapper:hover {
+  letter-spacing: 0.35em;
 }
 .header > nav {
   display: flex;
@@ -37,4 +46,14 @@ header > .container > hr {
 .header > nav > a:hover::before {
   transform-origin: right;
   animation: typeAndDelete 1s steps(3) forwards;
+}
+@media (max-width: 600px) {
+  .header > nav {
+    display: none;
+  }
+}
+@media (min-width: 600px) {
+  .header .burger {
+    display: none;
+  }
 }
