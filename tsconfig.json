@@ -9,6 +9,7 @@
     }
   ],
   "compilerOptions": {
+    "module": "nodenext",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -16,7 +17,12 @@
       ]
     },
     "types": [
-      "node"
-    ]
+      "nodenext"
+    ],
+    "moduleResolution": "nodenext", // Важно для корректного поиска модулей
+    "esModuleInterop": true, // Для корректной работы с импортами CommonJS
+    "allowSyntheticDefaultImports": true, // Позволяет импортировать модули по умолчанию
+    "strict": true, // Включить строгий режим (рекомендуется)
+    "skipLibCheck": true // Пропуск проверки типов в библиотеках (ускоряет сборку)
   }
 }

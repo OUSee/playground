@@ -1,9 +1,25 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
+    "module": "nodenext",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-
-    /* Linting */
+    /* Настройки для алиасов */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    /* Резолв модулей */
+    "moduleResolution": "nodenext",
+    /* Импорты */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    /* Типы (если используете Vite) */
+    "types": [
+      "vite/client"
+    ],
+    /* Линтинг */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -11,5 +27,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
 }

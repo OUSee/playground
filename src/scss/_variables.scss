@@ -1,0 +1,240 @@
+:root {
+    --main-color: rgba(255, 255, 255);
+    --second-color: black;
+    --bg-color: #12438f;
+    --net-color: rgba(255, 255, 255, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+
+    //debug
+    // outline: 1px solid rgba(255, 255, 255, 0.5);
+
+}
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    color: var(--main-color);
+    width: 100%;
+    --color: var(--net-color);
+    background-color: var(--bg-color);
+    background-image:
+        linear-gradient(0deg,
+            transparent 24%,
+            var(--color) 25%,
+            var(--color) 26%,
+            transparent 27%,
+            transparent 74%,
+            var(--color) 75%,
+            var(--color) 76%,
+            transparent 77%,
+            transparent),
+        linear-gradient(90deg,
+            transparent 24%,
+            var(--color) 25%,
+            var(--color) 26%,
+            transparent 27%,
+            transparent 74%,
+            var(--color) 75%,
+            var(--color) 76%,
+            transparent 77%,
+            transparent);
+    background-size: 5vh 5vh;
+    animation: move 5s linear infinite;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1900px;
+    margin: auto;
+
+    @media (max-width: 1930px) {
+        margin: 0 15px;
+    }
+}
+
+a {
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3 {}
+
+p {}
+
+
+hr {
+    min-width: 100%;
+    max-height: 1px;
+    background-color: var(--main-color);
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 5vh 5vh;
+    }
+}
+
+@keyframes typeAndDelete {
+
+    0%,
+    10% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+
+    45%,
+    55% {
+        opacity: 1;
+        transform: scaleX(0.5);
+    }
+
+    90%,
+    100% {
+        opacity: 1;
+        transform: scaleX(0);
+    }
+}
+
+div.blueprint {
+    position: relative;
+
+    &.vertical {
+        border-left: 1px solid var(--net-color);
+        border-right: 1px solid var(--net-color);
+        padding-top: 20px;
+
+        &>span {
+            position: absolute;
+            display: block;
+            left: 0;
+            width: 9px;
+            top: 10px;
+            height: 16px;
+            background-color: var(--main-color);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform: translateX(2px) rotate(-90deg);
+
+            &.arrow-bottom {
+                right: 0;
+                left: unset;
+                transform: scale(1, -1) translateX(-2px) rotate(90deg);
+            }
+        }
+
+        &::after {
+            display: flex;
+            position: absolute;
+            transform-origin: left;
+            left: 0;
+            top: 18px;
+            content: '';
+            height: 1px;
+            width: 100%;
+            background-color: var(--main-color);
+            background-size: 10px 10px;
+            background-position: 0 0;
+        }
+
+        &::before {
+            content: $rand-num2;
+            width: fit-content;
+            color: var(--main-color);
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    &.horizontal {
+        border-top: 1px solid var(--net-color);
+        border-bottom: 1px solid var(--net-color);
+        padding-left: 20px;
+
+        &>span {
+            position: absolute;
+            display: block;
+            left: 0;
+            width: 9px;
+            height: 16px;
+            background-color: var(--main-color);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+
+            &.arrow-bottom {
+                bottom: 0;
+                transform: scale(1, -1);
+            }
+        }
+
+        &::after {
+            display: flex;
+            position: absolute;
+            left: 4px;
+            top: 0;
+            content: '';
+            height: 100%;
+            width: 1px;
+            background-color: transparent;
+            background-image: linear-gradient(45deg,
+                    transparent 0%,
+                    transparent 17.5%,
+                    white 17.5%,
+                    white 37.5%,
+                    transparent 37.5%,
+                    transparent 47.5%,
+                    white 47.5%,
+                    white 52.5%,
+                    transparent 52.5%,
+                    transparent 62.5%,
+                    white 62.5%,
+                    white 82.5%,
+                    transparent 82.5%,
+                    transparent 100%);
+            background-size: 10px 10px;
+            background-position: 0 0;
+        }
+
+        &::before {
+            content: $rand-num;
+            width: fit-content;
+            color: var(--main-color);
+            transform: rotate(-90deg) translateY(-50%);
+            position: absolute;
+            left: -18px;
+            top: 50%;
+        }
+    }
+}
+
+.img-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        object-fit: cover;
+        aspect-ratio: 16 / 9;
+        width: 100%;
+        height: auto;
+
+    }
+}
