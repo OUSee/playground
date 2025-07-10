@@ -27,7 +27,7 @@ import Canvas from '@/components/Canvas/Canvas.vue';
                     will find all the nessesary information there. <br> Anyway <br><br> <strong>Enjoy!</strong>
                 </p>
                 <nav class="ml-auto w-fit">
-                    <router-link class="button " to="/2d-game"><span>Play 2D Game</span></router-link>
+                    <router-link class="button disabled" to="/2d-game"><span>Play 2D Game</span></router-link>
                     <router-link class="button disabled" to="/games-lib">Titles Library</router-link>
                     <p>...more to go</p>
                 </nav>
