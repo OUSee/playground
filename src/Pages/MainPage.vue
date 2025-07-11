@@ -29,6 +29,7 @@ import Canvas from '@/components/Canvas/Canvas.vue';
                 <nav class="ml-auto w-fit">
                     <router-link class="button disabled" to="/2d-game"><span>Play 2D Game</span></router-link>
                     <router-link class="button disabled" to="/games-lib">Titles Library</router-link>
+                    <router-link class="button" to="/gyrogame">Gyro game</router-link>
                     <p>...more to go</p>
                 </nav>
 
