@@ -5,7 +5,7 @@ import GyroGame from '@/components/Canvas/GyroGame/GyroGame.vue';
 </script>
 
 <template>
-    <div class="container mt-60">
+    <div id="gyrogamepage" class="container mt-60">
         <h1>GyroGame</h1>
         <div class="container">
             <p class="mb-60">
@@ -23,7 +23,13 @@ import GyroGame from '@/components/Canvas/GyroGame/GyroGame.vue';
     </div>
 </template>
 
-<style scoped>
+<style type="scss" scoped>
+#gyrogamepage {
+    @media (max-width: 600px) {
+        margin-top: 100px;
+    }
+}
+
 div.blueprint {
     min-width: 360px;
     min-height: 360px;

@@ -278,10 +278,36 @@ export const useGyroGameEngine = () => {
 
   const gyroscope = ref({ a: 0, b: 0, g: 0 })
 
-  window.addEventListener('deviceorientation', (event) => {
-    console.log('Device orientation:', event.alpha, event.beta, event.gamma)
-    gyroscope.value = getGyroScope(event)
-  })
+  type DeviceMotionEventWithPermission = typeof DeviceMotionEvent & {
+    requestPermission?: () => Promise<'granted' | 'denied'>;
+  };
+
+  const { requestPermission } = DeviceMotionEvent as DeviceMotionEventWithPermission;
+
+  if (typeof requestPermission === 'function') {
+    requestPermission()
+      .then((response) => {
+        if (response === 'granted') {
+          // Разрешение получено, можно подписываться на события
+          window.addEventListener('deviceorientation', (event) => {
+            console.log('Device orientation:', event.alpha, event.beta, event.gamma)
+            gyroscope.value = getGyroScope(event)
+          })
+        } else {
+          alert('no permission granted')
+        }
+      })
+      .catch((error) => {
+       console.log(`=> err:`, error);
+      });
+  } else {
+    // Для других платформ — fallback
+    window.addEventListener('deviceorientation', (event) => {
+        console.log('Device orientation:', event.alpha, event.beta, event.gamma)
+        gyroscope.value = getGyroScope(event)
+    })
+  }
+  
 
   const getGyroScope = (event: DeviceOrientationEvent): any => {
     const gyroData = { a: 0, b: 0, g: 0 }
