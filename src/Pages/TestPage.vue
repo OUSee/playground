@@ -1,6 +1,5 @@
 <script setup lang='ts'>
-import Canvas from '@/components/Canvas/Canvas.vue';
-
+import BoxTowerGame from '@/components/Canvas/BoxTowerGame/BoxTowerGame.vue';
 
 </script>
 
@@ -10,7 +9,7 @@ import Canvas from '@/components/Canvas/Canvas.vue';
         <div class="blueprint horizontal">
             <span class="arrow-top"></span>
             <span class="arrow-bottom"></span>
-            <Canvas></Canvas>
+            <BoxTowerGame></BoxTowerGame>
         </div>
     </div>
 </template>
@@ -19,8 +18,6 @@ import Canvas from '@/components/Canvas/Canvas.vue';
 div.blueprint {
     min-width: 360px;
     min-height: 360px;
-    max-width: 50vh;
-    max-height: 50vh;
     margin: 0 auto;
 }
 </style>
