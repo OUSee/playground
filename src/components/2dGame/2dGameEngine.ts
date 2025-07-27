@@ -196,7 +196,8 @@
 
         if (player.y > 500) {
             player.color = 'red'
-            player.weight = -1
+            player.velocity.y = 0
+            player.weight = 0
             setTimeout(() => {
                 restartLevel()
             }, 300)
@@ -400,28 +401,10 @@
         }
 
         if (e.key === 'ArrowUp') {
-            // Jump only if on ground (velocity.y === 0)
-            if (player.velocity.y === 0 && can_jump_flag) {
-                player.velocity.y = -PLAYER_JUMP_IMPULSE; // jump impulse
-                can_jump_flag = false;
-                setTimeout(
-                    () => can_jump_flag = true,
-                    JUMP_COOLDOWN)
-            }
+            player.jump()
         }
     })
-
-    document.addEventListener('keyup', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            keys[e.key] = false;
-        }
-        // if (e.key === 'ArrowUp') {
-        //     // Jump only if on ground (velocity.y === 0)
-        //     if (player.velocity.y === 0) {
-        //         player.velocity.y = -PLAYER_JUMP_IMPULSE; // jump impulse
-        //     }
-        // }
-    })
+    
 
     // animations and sprites
 
