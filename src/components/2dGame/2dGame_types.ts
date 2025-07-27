@@ -1,17 +1,18 @@
 
 
 export class World {
-    gravity: number =15;
+    gravity: number = 15;
     speed: number = 250;
+    objects: Array<GameObject> = []
      
     checkWorldCollision(objects: GameObject[]) {
 
         function isIntersecting(A: GameObject, B: GameObject) : boolean {
             return !(
-                A.x + A.width < B.x ||
-                A.x > B.x + B.width ||
-                A.y + A.height < B.y ||
-                A.y > B.y + B.height ||
+                A.position.x + A.width < B.position.x ||
+                A.position.x > B.position.x + B.width ||
+                A.position.y + A.height < B.position.y ||
+                A.position.y > B.position.y + B.height ||
                 !A.collidable || !B.collidable
             );
         }
@@ -19,8 +20,8 @@ export class World {
         function checkCollisionAndDirection(A: GameObject, B: GameObject)   {
             if (!isIntersecting(A, B)) return;
 
-            const centerA = { x: A.x + A.width / 2, y: A.y + A.height / 2 };
-            const centerB = { x: B.x + B.width / 2, y: B.y + B.height / 2 };
+            const centerA = { x: A.position.x + A.width / 2, y: A.position.y + A.height / 2 };
+            const centerB = { x: B.position.x + B.width / 2, y: B.position.y + B.height / 2 };
 
             const dx = centerB.x - centerA.x;
             const dy = centerB.y - centerA.y;
@@ -63,24 +64,24 @@ export class World {
 
                     if (direction === "y+") {
                         // объект A стоит на объекте B
-                        A.position.y = B.y - A.height;
+                        A.position.y = B.position.y - A.height;
                         A.velocity.y = 0;
                         A.acceleration.y = 0;
-                        A.y = A.position.y;
+                        A.position.y = A.position.y;
                     }
                     if (direction === "x+") {
-                        A.position.x = B.x - A.width;
+                        A.position.x = B.position.x - A.width;
                         A.velocity.x = 0;
                         A.acceleration.x = 0;
                     }
-                    else {
-                        A.position.x = B.x + B.width;
+                    if (direction === "x-") {
+                        A.position.x = B.position.x + B.width;
                         A.velocity.x = 0;
                         A.acceleration.x = 0;
                     }
                     
-                    A.onCollisionWith(B, direction, this, objects);
-                    B.onCollisionWith(A, invertDirection(direction), this, objects);
+                    A.onCollisionWith(B, direction);
+                    B.onCollisionWith(A, invertDirection(direction));
                 }
             }
         }
@@ -88,14 +89,14 @@ export class World {
 }
 
 export type Vector2d = {
-    x: number | 0,
-    y: number | 0
+    x: number,
+    y: number
 }
 
 export type Vector3d = {
-    x: number | 0,
-    y: number | 0,
-    z: number | 0
+    x: number,
+    y: number,
+    z: number
 }
 
 export type Animation = {
@@ -108,74 +109,32 @@ export type Animation = {
 export type Animations = Record<string, Animation[]>
 
 export class GameObject {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    color: string;
-    collidable: boolean;
+    width: number = 0;
+    height: number = 0;
+    color: string = 'black';
+    collidable: boolean = true;
     id: string;
     collision: Array<{object_id: string, direction: string}> = [];
-    weight: number ;
-    velocity: Vector2d;
-    acceleration: Vector2d;
-    position: Vector2d;
-    sprite: HTMLImageElement | null;
-    animations: Animations | null;
-    currentAnimationKey: string | null;
-    currentAnimationFrame: number | null;
-    health: number | null;
-    alive: boolean | null;
-    damage: number | null;
-    frameTimer: number | null;
+    weight: number = 10;
+    velocity: Vector2d = {x: 0, y: 0};
+    acceleration: Vector2d = {x: 0, y: 0};
+    position: Vector2d = {x: 0, y: 0};
+    sprite: HTMLImageElement | null = null;
+    animations: Animations | null = null;
+    currentAnimationKey: string | null = null;
+    currentAnimationFrame: number | null = null;
+    health: number | null = null;
+    alive: boolean | null = null;
+    damage: number | null = null;
+    frameTimer: number | null = null;
+    world: World;
 
-
-    constructor(
-        x: number | 0, 
-        y: number | 0, 
-        width: number | 0, 
-        height: number | 0, 
-        color: string | 'black', 
-        collidable: boolean | true, 
-        id: string, 
-        collision:  Array<{object_id: string, direction: string}> | [],
-        weight: number | 10,
-        velocity: Vector2d,
-        acceleration: Vector2d, 
-        position: Vector2d,
-        sprite: HTMLImageElement | null,
-        animations: Animations | null,
-        currentAnimationKey: string | null,
-        currentAnimationFrame: number | null,
-        health: number | null,
-        alive: boolean | null,
-        damage: number | null,
-        frameTimer: number | null
-    ){
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.color = color
-        this.collidable = collidable
-        this.id = id 
-        this.collision = collision
-        this.weight = weight
-        this.velocity = velocity
-        this.acceleration = acceleration,
-        this.position = position
-        this.sprite = sprite
-        this.animations = animations
-        this.currentAnimationKey = currentAnimationKey
-        this.currentAnimationFrame = currentAnimationFrame
-        this.health = health
-        this.alive = alive
-        this.damage = damage
-        this.frameTimer = frameTimer;
-
+    constructor(id: string, world: World){
+        this.id = id
+        this.world = world
     }
-
-    updatePhysics(dt: number, world: World){
+   
+    updatePhysics(dt: number,){
         if (this.weight < 0) {
           this.velocity.x = 0;
           this.velocity.y = 0;
@@ -183,18 +142,15 @@ export class GameObject {
           this.acceleration.y = 0;
           return;
         }
-        this.acceleration.y = world.gravity * this.weight;
+        this.acceleration.y = this.world.gravity * this.weight;
 
         this.velocity.y += this.acceleration.y * dt;
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
-
-        this.x = this.position.x;
-        this.y = this.position.y;
     }
 
-    onCollisionWith(other: GameObject, direction: string, world: World, objects: GameObject[]) {
+    onCollisionWith(other: GameObject, direction: string) {
       // По умолчанию делает ничего
     }
      
@@ -225,16 +181,23 @@ export class GameObject {
         this.velocity = { x: 0, y: 0 };
         this.acceleration = { x: 0, y: 0 };
         this.weight = 0;
+        const index = this.world.objects.indexOf(this);
+        if (index > -1) {
+          this.world.objects.splice(index, 1);
+        }
     }
 }
 
 export class Foe extends GameObject {
     health: number = 10;
-    
+    width: number = 50;
+    height: number = 100;
 }
 
 export class Player extends GameObject {
     health: number = 100;
+    width: number = 50;
+    height: number = 100;
     alive: boolean = true;
     speed: number = 25;
     jump_impulse: number = 25;
@@ -283,31 +246,30 @@ export class Player extends GameObject {
             else if (this.velocity.x < -this.max_air_velocity) {
                 this.velocity.x += 1;
             }
-
         }
     }
 
     shoot(objects: GameObject[]) {
         // Создаём новый снаряд в позиции перед игроком
-        // const projectile = new Projectile();
-        // objects.push(projectile);
-  }
+        const projectile = new Projectile(`projectile ${Date.now()}`, this.world);
+        objects.push(projectile);
+    }
 }
 
 export class Projectile extends GameObject {
-    onCollisionWith(other: GameObject, direction: string, world: World, objects: GameObject[]) {
-    // Игнорируем столкновения с самим собой или с другими снарядами, если нужно
-    if (other === this) return;
+    onCollisionWith(other: GameObject, direction: string) {
+        // Игнорируем столкновения с самим собой или с другими снарядами, если нужно
+        if (other === this) return;
 
-    // Наносим урон другому объекту
-    if (other.takeDamage && this.damage) {
-      other.takeDamage(this.damage);
-    }
+        // Наносим урон другому объекту
+        if (this.damage && other.health) {
+          other.takeDamage(this.damage);
+        }
 
-    // Удаляем снаряд из списка объектов (то есть "уничтожаем" его)
-    const index = objects.indexOf(this);
-    if (index > -1) {
-      objects.splice(index, 1);
+        // Удаляем снаряд из списка объектов (то есть "уничтожаем" его)
+        const index = this.world.objects.indexOf(this);
+        if (index > -1) {
+          this.world.objects.splice(index, 1);
+        }
     }
-  }
 }
