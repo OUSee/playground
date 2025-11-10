@@ -9,6 +9,17 @@ import { Use2dGameEngine } from './2dGameEngine';
 const GE = Use2dGameEngine()
 const canvas = ref<HTMLCanvasElement>()
 
+defineExpose({
+    startDemo() {
+        if (canvas.value) {
+            const ctx = canvas.value.getContext('2d');
+            GE.testGameClasses(ctx, canvas.value, true)
+        } else {
+            alert('no canvas')
+        }
+    }
+})
+
 
 onMounted(() => {
     setTimeout(() => {
@@ -21,7 +32,6 @@ onMounted(() => {
                 }
             }
         })
-
     }, 500)
 })
 
