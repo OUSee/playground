@@ -185,6 +185,7 @@ export class GameObject {
 	onCollisionWith(other: GameObject, direction: string) {
 		this.takeDamage(other.damage ?? 0);
 		other.takeDamage(this.damage ?? 0);
+		console.log(`=> direction: ${direction}`);
 	}
 
 	takeDamage(ammount: number) {
@@ -316,6 +317,8 @@ export class Projectile extends GameObject {
 	onCollisionWith(other: GameObject, direction: string) {
 		// Игнорируем столкновения с самим собой или с другими снарядами, если нужно
 		if (other === this) return;
+
+		console.log(`=> direction: ${direction}`);
 
 		// Удаляем снаряд из списка объектов (то есть "уничтожаем" его)
 		const index = this.world.objects.indexOf(this);

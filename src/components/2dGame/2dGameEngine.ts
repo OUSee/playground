@@ -1,9 +1,9 @@
-import { Foe, GameObject, Player, Projectile, World } from './2dGame_types.ts';
+import { Foe, GameObject, Player, World } from './2dGame_types.ts';
 
 export const Use2dGameEngine = () => {
-	function delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
-	}
+	// function delay(ms: number) {
+	// 	return new Promise((resolve) => setTimeout(resolve, ms));
+	// }
 
 	const testGameClasses = async (ctx: any, canvas: any, debug: boolean) => {
 		let running = true;
