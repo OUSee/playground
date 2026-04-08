@@ -11,6 +11,7 @@ export const useGyroGameEngine = () => {
   // Объект для хранения текущей дельты движения по осям
   const velocity = new THREE.Vector3(0, 0, 0)
   const acceleration = new THREE.Vector3(0, 0, 0)
+  const gravity = new THREE.Vector3(0, -0.1, 0);
   // Смещение камеры относительно сферы
   const cameraOffset = new THREE.Vector3(0, 5, 5); // x, y (высота), z (отдаление)
 
@@ -60,8 +61,9 @@ export const useGyroGameEngine = () => {
     // обновляем ускорение
     updateAccelerationFromInput()
 
+    const t_acceleration = acceleration.clone().add(gravity)
     // Интегрируем ускорение, чтобы получить скорость
-    velocity.add(acceleration.clone().multiplyScalar(deltaTime))
+    velocity.add(t_acceleration.multiplyScalar(deltaTime))
 
     // Интегрируем скорость, чтобы получить смещение
     const displacement = velocity.clone().multiplyScalar(deltaTime)
