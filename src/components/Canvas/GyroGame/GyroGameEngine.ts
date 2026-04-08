@@ -175,7 +175,7 @@ export const useGyroGameEngine = () => {
     }
   })
 
-  const jump_timer = ref<NodeJS.Timeout | null | undefined>(null)
+  const jump_timer = ref<number | null | undefined>(null)
 
   // Обработчик нажатия клавиш
   document.addEventListener('keydown', (e) => {
