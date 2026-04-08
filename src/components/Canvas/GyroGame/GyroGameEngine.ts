@@ -203,13 +203,13 @@ export const useGyroGameEngine = () => {
       case " ":
         if(e.code == "Space"){
           if(jump_timer.value){
-            jumtimer.value = setTimeout(()=>{
+            jump_timer.value = setTimeout(()=>{
               jump_timer.value = null
             }, 500)
             break
           }
           inputAcceleration.y = 200;
-          jumtimer.value = setTimeout(()=>{
+          jump_timer.value = setTimeout(()=>{
               jump_timer.value = null
             }, 500)
         }
