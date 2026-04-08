@@ -30,8 +30,8 @@ import Canvas from '@/components/Canvas/Canvas.vue';
                     <router-link class="button" to="/2dgame"><span>Play 2D Game</span></router-link>
                     <router-link class="button disabled" to="/games-lib">Titles Library</router-link>
                     <router-link class="button" to="/gyrogame">Gyro game</router-link>
-                    <router-link class="button" to="/pong">PONG</router-link>
-                    <router-link class="button" to="/sigame">SPACE INVADERS</router-link>
+                    <router-link class="button disabled" to="/pong">PONG</router-link>
+                    <router-link class="button disabled" to="/sigame">SPACE INVADERS</router-link>
                     
                     <p>...more to go</p>
                 </nav>
