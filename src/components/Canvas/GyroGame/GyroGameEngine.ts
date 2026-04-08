@@ -175,6 +175,7 @@ export const useGyroGameEngine = () => {
     }
   })
 
+  const jump_timer = ref(null)
 
   // Обработчик нажатия клавиш
   document.addEventListener('keydown', (e) => {
@@ -199,6 +200,20 @@ export const useGyroGameEngine = () => {
       case 'ArrowRight':
         inputAcceleration.x = 100
         break
+      case " ":
+        if(e.code == "Space"){
+          if(jump_timer.value){
+            jumtimer.value = setTimeout(()=>{
+              jump_timer.value = null
+            }, 500)
+            break
+          }
+          inputAcceleration.y = 200;
+          jumtimer.value = setTimeout(()=>{
+              jump_timer.value = null
+            }, 500)
+        }
+        break 
       default:
         break
     }
