@@ -97,8 +97,19 @@ export const useGyroGameEngine = () => {
 
     const t_acceleration = acceleration.clone().add(gravity)
 
+    if(midair.value){
+      t_acceleration.y = 0
+    }
+
     // Интегрируем ускорение, чтобы получить скорость
     velocity.add(t_acceleration.multiplyScalar(deltaTime))
+
+    // ✅ Прыжок как ВЕЛИЧИНА СКОРОСТИ (импульс), не ускорение
+    if (!midair.value && inputAcceleration.y > 0) {
+      velocity.y = 8.0 // ✅ Фиксированная скорость прыжка (высота ~3-4 единицы)
+      inputAcceleration.y = 0 // Сбрасываем флаг
+      midair.value = true
+    }
 
     // Интегрируем скорость, чтобы получить смещение
     const displacement = velocity.clone().multiplyScalar(deltaTime)
@@ -111,18 +122,19 @@ export const useGyroGameEngine = () => {
     
     midair.value = false
 
-    // ✅ Останавливаем вертикальную скорость (не падаем сквозь пол)
-    velocity.y = Math.max(0, velocity.y) // Только положительная скорость (прыжок)
+    // ✅ Сохраняем горизонтальную скорость, гасим только вертикальную
+    velocity.y = Math.max(0, velocity.y * 0.1) // Лёгкий отскок
     
-    // ✅ Трение на полу (сильнее обычного)
-    velocity.multiplyScalar(0.92)
+    // ✅ Трение только на полу (горизонталь)
+    velocity.x *= 0.85
+    velocity.z *= 0.85
   } else {
-    // Нет столкновения - нормальное движение
+    // В воздухе — перемещаем полностью
     sphereMesh.position.add(displacement)
-
     midair.value = true
-    // Обычное трение
-    velocity.multiplyScalar(0.5)
+    
+    // ✅ Минимальное сопротивление воздуха (НЕ 0.5!)
+    velocity.multiplyScalar(0.98)
   }
 
     // Обновляем только X/Z если на полу (сдвигаем горизонтально)
@@ -257,34 +269,28 @@ export const useGyroGameEngine = () => {
     switch (e.key) {
       case 'a':
       case 'ArrowLeft':
-        inputAcceleration.x = -100
+        inputAcceleration.x = -150
         break
       case 'w':
       case 'ArrowUp':
-        inputAcceleration.z = -100
+        inputAcceleration.z = -150
         break
       case 's':
       case 'ArrowDown':
-        inputAcceleration.z = 100
+        inputAcceleration.z = 150
         break
       case 'd':
       case 'ArrowRight':
-        inputAcceleration.x = 100
+        inputAcceleration.x = 150
         break
       case " ":
         // Прыжок (Space) с 500мс cooldown
-        if(e.code == "Space"){
-          if(jump_timer.value){
-            break // Уже прыгаем
-          }
-          inputAcceleration.y = 500;
-          jump_timer.value = setTimeout(()=>{
-              jump_timer.value = null
-            }, 500)
-          setTimeout(() => {
-            inputAcceleration.y = 0;
-          }, 150)  
-          
+        if (e.code == "Space" && !midair.value && !jump_timer.value) {
+          inputAcceleration.y = 1 // Простой триггер
+          jump_timer.value = setTimeout(() => {
+            inputAcceleration.y = 0
+            jump_timer.value = null
+          }, 300) // Более длинный cooldown
         }
         break 
       default:
