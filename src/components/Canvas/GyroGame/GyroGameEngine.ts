@@ -1,62 +1,93 @@
 import * as THREE from 'three'
 import { ref } from 'vue'
 
-export const useGyroGameEngine = () => {
 
-  // Создаём экземпляр часов
+/**
+ * Композабл для создания 3D гироскопической игры на Three.js
+ * Поддерживает управление мышью, клавиатурой, тач-событиями и гироскопом устройства
+ * Реализует физику движения сферы с гравитацией, трением и прыжками
+ */
+export const useGyroGameEngine = () => {
+  // === ФИЗИКА ДВИЖЕНИЯ ===
+  /** экземпляр часов */
   const clock = new THREE.Clock()
   let deltaTime = 0
-  // Объект для хранения направления движения (например, из клавиатуры)
-  const inputAcceleration = new THREE.Vector3(0, 0, 0)
-  // Объект для хранения текущей дельты движения по осям
-  const velocity = new THREE.Vector3(0, 0, 0)
-  const acceleration = new THREE.Vector3(0, 0, 0)
-  const gravity = new THREE.Vector3(0, -0.1, 0);
-  // Смещение камеры относительно сферы
-  const cameraOffset = new THREE.Vector3(0, 5, 5); // x, y (высота), z (отдаление)
 
+  /**
+  * Вектор ускорения от пользовательского ввода (мышь/клавиатура/гироскоп/тач)
+  */
+  const inputAcceleration = new THREE.Vector3(0, 0, 0)
+
+  /** Текущая скорость движения сферы (интегрируется из ускорения) */
+  const velocity = new THREE.Vector3(0, 0, 0)
+
+  /** Текущее ускорение (input + гравитация) */ 
+  const acceleration = new THREE.Vector3(0, 0, 0)
+
+  /**  Вектор гравитации (направлен вниз по оси Y)*/
+  const gravity = new THREE.Vector3(0, -0.1, 0);
+
+  /** Относительное смещение камеры от сферы (вид сверху-сзади); x, y (высота), z (отдаление)*/
+  const cameraOffset = new THREE.Vector3(0, 5, 5); 
+
+  // === КОНТЕЙНЕР И РАЗМЕРЫ ===
   // Получаем контейнер для канваса
   const handler = document.getElementById('gyrogamewindow')
 
   // Размеры канваса с минимальным значением 360px
   const sizes = {
+    // Адаптивные размеры с защитой от слишком маленьких значений
     width: (handler?.offsetWidth && handler?.offsetWidth > 360) ? handler.offsetWidth : 360,
     height: (handler?.offsetHeight && handler?.offsetHeight > 360) ? handler.offsetHeight : 360
   }
 
+  // === ОСНОВНЫЕ ОБЪЕКТЫ СЦЕНЫ ===
   // === Создание сцены ===
   const scene = new THREE.Scene()
 
-  // === Настройка камеры ===
+  // === КАМЕРА ===
+  /** Перспективная камера с FOV 75°, ближняя/дальняя плоскости отсечения */
   const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
   camera.position.set(0, 5, 0)
-  camera.rotation.set(-0.8, 45, 0) 
+  camera.rotation.set(-0.8, 45, 0) // Начальный наклон и поворот
   scene.add(camera)
 
-  // === Создание материалов ===
+  // === МАТЕРИАЛЫ ===
+  // Wireframe материал для "проволочного" эффекта
   const wiredMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
 //   const solidMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: false })
 
-  // === Куб (пока не добавлен в сцену) ===
+  // === ОБЪЕКТЫ МИРА ===
+  // Куб (заготовка, пока не добавлен в сцену - можно раскомментировать)
   const cubeGeometry = new THREE.BoxGeometry(3, 3, 3)
   const cube = new THREE.Mesh(cubeGeometry, wiredMaterial)
   cube.position.y = 1
-  // scene.add(cube)
+  scene.add(cube)
 
   // === Сфера ===
+  // Главный объект - сфера игрока
   const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 8)
   const sphereMesh = new THREE.Mesh(sphereGeometry, wiredMaterial)
   sphereMesh.position.y = 1.5
   scene.add(sphereMesh)
 
-
-  // Функция для обновления ускорения на основе ввода
+  // === ФУНКЦИИ ФИЗИКИ ===
+  /**
+   * Обновляет ускорение на основе пользовательского ввода
+   * Масштабирует inputAcceleration для плавного движения
+   */
   const updateAccelerationFromInput = () => {
     acceleration.copy(inputAcceleration).multiplyScalar(0.1) // масштабируем ускорение
   }
 
 
-  // Функция движения сферы с учётом дельты движения и ускорения
+  /**
+   * Основная функция физики движения сферы
+   * Использует численное интегрирование (Euler method):
+   * 1. acceleration → velocity (интегрирование)
+   * 2. velocity → position (интегрирование)
+   * Применяет гравитацию, трение и вращение сферы
+   */
   const moveSphere = () => {
     // обновляем ускорение
     updateAccelerationFromInput()
@@ -70,20 +101,23 @@ export const useGyroGameEngine = () => {
 
     // Обновляем позицию сферы
     sphereMesh.position.add(displacement)
-    velocity.multiplyScalar(0.985) // как быстро движение затухает
+
+    // Трение: затухание скорости (0.985 = коэффициент затухания)
+    velocity.multiplyScalar(0.985) 
 
      // Вращаем сферу для визуализации движения
     sphereMesh.rotation.x += velocity.z * 0.06
     sphereMesh.rotation.z -= velocity.x * 0.06
   }
 
-  // === Сетка для ориентации в пространстве ===
+  // === ВИЗУАЛЬНЫЕ ПОМОЩНИКИ ===
+  // Сетка для ориентации в пространстве (100x100 единиц)
   const grid = new THREE.GridHelper(100, 100, 0x888888)
   scene.add(grid)
 
   /**
-   * Создание и добавление canvas в DOM
-   * @returns HTMLCanvasElement
+   * Создаёт и настраивает WebGL canvas
+   * @returns HTMLCanvasElement - Готовый canvas элемент
    */
   const getCanvas = (): HTMLCanvasElement => {
     const canvas = document.createElement('canvas')
@@ -98,37 +132,43 @@ export const useGyroGameEngine = () => {
     return canvas
   }
 
-  // === Настройка рендерера ===
-  const renderer = new THREE.WebGLRenderer({ canvas: getCanvas(), antialias: true })
-  renderer.setPixelRatio(window.devicePixelRatio)
-  renderer.setClearColor(0x12438f, 0)
+  // === РЕНДЕРЕР ===
+  const renderer = new THREE.WebGLRenderer({ canvas: getCanvas(), antialias: true }) // Сглаживание для лучшего качества
+  renderer.setPixelRatio(window.devicePixelRatio) // Поддержка HiDPI экранов
+  renderer.setClearColor(0x12438f, 0) // Тёмно-синий фон
 
   /**
-   * Основной цикл анимации
+   * Главный игровой цикл (60 FPS)
+   * Обновляет физику, позицию камеры и рендерит сцену
    */
   function animate() {
     try {
       requestAnimationFrame(animate)
-      deltaTime = clock.getDelta()
-      moveSphere()
-       // Получаем позицию сферы
-    const spherePos = sphereMesh.position;
+      deltaTime = clock.getDelta() // Точное время кадра
 
-    // Устанавливаем позицию камеры выше и позади сферы
-    camera.position.copy(spherePos).add(cameraOffset);
+      moveSphere() // Физика
 
-    // Камера смотрит на сферу
-    camera.lookAt(spherePos);
+      // Получаем позицию сферы
+      const spherePos = sphereMesh.position;
+
+      // Устанавливаем позицию камеры выше и позади сферы
+      camera.position.copy(spherePos).add(cameraOffset);
+
+      // Камера смотрит на сферу
+      camera.lookAt(spherePos);
+
+
       renderer.render(scene, camera)
     } catch (err) {
       console.error('Animation error:', err)
     }
   }
 
-  // === Переменные для управления взаимодействием ===
-  let isDragging = false
-  let cameraDragging = false
+  // === УПРАВЛЕНИЕ ===
+  let isDragging = false // Флаг перетаскивания
+  let cameraDragging = false // Режим вращения камеры (Shift)
 
+  // === АДАПТИВНОСТЬ ===
   // Обработчик изменения размера окна и контейнера
   window.addEventListener('resize', () => {
     sizes.width = (handler?.offsetWidth && handler.offsetWidth > 360) ? handler.offsetWidth : 360
@@ -141,6 +181,7 @@ export const useGyroGameEngine = () => {
     renderer.setPixelRatio(window.devicePixelRatio)
   })
 
+  // === МЫШЬ ===
   // Обработчик начала перетаскивания мышью
   handler?.addEventListener('mousedown', () => {
     isDragging = true
@@ -177,14 +218,16 @@ export const useGyroGameEngine = () => {
     }
   })
 
-  const jump_timer = ref<number | null | undefined>(null)
+  // === КЛАВИАТУРА ===
+  const jump_timer = ref<any | number | null | undefined>(null) // Дебounce для прыжков
 
-  // Обработчик нажатия клавиш
+  
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Shift') {
-      cameraDragging = true
+      cameraDragging = true // Режим камеры
     }
 
+    // WASD + стрелки для движения
     switch (e.key) {
       case 'a':
       case 'ArrowLeft':
@@ -203,17 +246,19 @@ export const useGyroGameEngine = () => {
         inputAcceleration.x = 100
         break
       case " ":
+        // Прыжок (Space) с 500мс cooldown
         if(e.code == "Space"){
           if(jump_timer.value){
-            jump_timer.value = setTimeout(()=>{
-              jump_timer.value = null
-            }, 500)
-            break
+            break // Уже прыгаем
           }
           inputAcceleration.y = 200;
           jump_timer.value = setTimeout(()=>{
               jump_timer.value = null
             }, 500)
+          setTimeout(() => {
+            inputAcceleration.y = 0;
+          }, 100)  
+          
         }
         break 
       default:
@@ -325,7 +370,12 @@ export const useGyroGameEngine = () => {
     })
   }
   
-
+  /**
+   * Парсит данные гироскопа и преобразует в ускорение
+   * alpha (a) - поворот по оси Z
+   * beta (b)  - наклон вперёд-назад (ось X)  
+   * gamma (g) - наклон влево-вправо (ось Y)
+   */
   const getGyroScope = (event: DeviceOrientationEvent): any => {
     const gyroData = { a: 0, b: 0, g: 0 }
     gyroData.a = event.alpha ?? 0;
