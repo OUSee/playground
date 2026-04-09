@@ -66,7 +66,7 @@ export const useBoxGameEngine = () => {
   const velocity = new THREE.Vector3(0, 0, 0)
   const acceleration = new THREE.Vector3(0, 0, 0)
   // Смещение камеры 
-  const cameraOffset = new THREE.Vector3(0, 5, 5); // x, y (высота), z (отдаление)
+  // const cameraOffset = new THREE.Vector3(0, 5, 5); // x, y (высота), z (отдаление)
 
 
   
@@ -125,11 +125,11 @@ export const useBoxGameEngine = () => {
     camera.lookAt(targetPoint)
   }
 
-  const calculateHeight = (a: number, b: number): number => {
-    const c = Math.sqrt(a*a + b*b);
-    const h = (a*b)/c
-    return h
-  }
+  // const calculateHeight = (a: number, b: number): number => {
+  //   const c = Math.sqrt(a*a + b*b);
+  //   const h = (a*b)/c
+  //   return h
+  // }
 
   // Обработчики событий
   let isDragging = false

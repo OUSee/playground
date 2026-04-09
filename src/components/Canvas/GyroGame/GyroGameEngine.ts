@@ -93,17 +93,37 @@ export const useGyroGameEngine = () => {
     updateAccelerationFromInput()
 
     const t_acceleration = acceleration.clone().add(gravity)
+
     // Интегрируем ускорение, чтобы получить скорость
     velocity.add(t_acceleration.multiplyScalar(deltaTime))
 
     // Интегрируем скорость, чтобы получить смещение
     const displacement = velocity.clone().multiplyScalar(deltaTime)
 
-    // Обновляем позицию сферы
-    sphereMesh.position.add(displacement)
+    const newY = sphereMesh.position.y + displacement.y
 
-    // Трение: затухание скорости (0.985 = коэффициент затухания)
-    velocity.multiplyScalar(0.985) 
+    if (newY <= 0.5) {
+    // Столкновение! Сбрасываем Y позицию на пол + радиус
+    sphereMesh.position.y = 0.5
+    
+    // ✅ Останавливаем вертикальную скорость (не падаем сквозь пол)
+    velocity.y = Math.max(0, velocity.y) // Только положительная скорость (прыжок)
+    
+    // ✅ Трение на полу (сильнее обычного)
+    velocity.multiplyScalar(0.92)
+  } else {
+    // Нет столкновения - нормальное движение
+    sphereMesh.position.add(displacement)
+    
+    // Обычное трение
+    velocity.multiplyScalar(0.8)
+  }
+
+    // Обновляем только X/Z если на полу (сдвигаем горизонтально)
+  if (sphereMesh.position.y <= 0.5) {
+    sphereMesh.position.x += displacement.x
+    sphereMesh.position.z += displacement.z
+  }
 
      // Вращаем сферу для визуализации движения
     sphereMesh.rotation.x += velocity.z * 0.06
