@@ -30,6 +30,9 @@ export const useGyroGameEngine = () => {
   /** Относительное смещение камеры от сферы (вид сверху-сзади); x, y (высота), z (отдаление)*/
   const cameraOffset = new THREE.Vector3(0, 5, 5); 
 
+  /** Флаг если обьект находится в воздухе */
+  const midair = ref<Boolean>(true)
+
   // === КОНТЕЙНЕР И РАЗМЕРЫ ===
   // Получаем контейнер для канваса
   const handler = document.getElementById('gyrogamewindow')
@@ -106,6 +109,8 @@ export const useGyroGameEngine = () => {
     // Столкновение! Сбрасываем Y позицию на пол + радиус
     sphereMesh.position.y = 0.5
     
+    midair.value = false
+
     // ✅ Останавливаем вертикальную скорость (не падаем сквозь пол)
     velocity.y = Math.max(0, velocity.y) // Только положительная скорость (прыжок)
     
@@ -114,9 +119,10 @@ export const useGyroGameEngine = () => {
   } else {
     // Нет столкновения - нормальное движение
     sphereMesh.position.add(displacement)
-    
+
+    midair.value = true
     // Обычное трение
-    velocity.multiplyScalar(0.8)
+    velocity.multiplyScalar(0.5)
   }
 
     // Обновляем только X/Z если на полу (сдвигаем горизонтально)
@@ -271,13 +277,13 @@ export const useGyroGameEngine = () => {
           if(jump_timer.value){
             break // Уже прыгаем
           }
-          inputAcceleration.y = 200;
+          inputAcceleration.y = 500;
           jump_timer.value = setTimeout(()=>{
               jump_timer.value = null
             }, 500)
           setTimeout(() => {
             inputAcceleration.y = 0;
-          }, 100)  
+          }, 150)  
           
         }
         break 
@@ -299,15 +305,14 @@ export const useGyroGameEngine = () => {
       case 'ArrowLeft':
       case 'd':
       case 'ArrowRight':
-        inputAcceleration.x = 0
+        if(!midair.value) inputAcceleration.x = 0
         break
       case 'w':
       case 'ArrowUp':
       case 's':
       case 'ArrowDown':
-        inputAcceleration.z = 0
+        if(!midair.value) inputAcceleration.z = 0
         break
-      
       default:
         break
     }
