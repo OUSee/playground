@@ -25,7 +25,7 @@ export const useGyroGameEngine = () => {
   const acceleration = new THREE.Vector3(0, 0, 0)
 
   /**  Вектор гравитации (направлен вниз по оси Y)*/
-  const gravity = new THREE.Vector3(0, -0.1, 0);
+  const gravity = new THREE.Vector3(0, -10, 0);
 
   /** Относительное смещение камеры от сферы (вид сверху-сзади); x, y (высота), z (отдаление)*/
   const cameraOffset = new THREE.Vector3(0, 5, 5); 
