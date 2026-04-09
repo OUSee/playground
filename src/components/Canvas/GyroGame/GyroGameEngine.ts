@@ -105,11 +105,7 @@ export const useGyroGameEngine = () => {
     velocity.add(t_acceleration.multiplyScalar(deltaTime))
 
     // ✅ Прыжок как ВЕЛИЧИНА СКОРОСТИ (импульс), не ускорение
-    if (!midair.value && inputAcceleration.y > 0) {
-      velocity.y = 8.0 // ✅ Фиксированная скорость прыжка (высота ~3-4 единицы)
-      inputAcceleration.y = 0 // Сбрасываем флаг
-      midair.value = true
-    }
+    
 
     // Интегрируем скорость, чтобы получить смещение
     const displacement = velocity.clone().multiplyScalar(deltaTime)
@@ -132,7 +128,10 @@ export const useGyroGameEngine = () => {
     // В воздухе — перемещаем полностью
     sphereMesh.position.add(displacement)
     midair.value = true
-    
+     if ( inputAcceleration.y > 0) {
+      velocity.y = 8.0 // ✅ Фиксированная скорость прыжка (высота ~3-4 единицы)
+      inputAcceleration.y = 0 // Сбрасываем флаг
+    }
     // ✅ Минимальное сопротивление воздуха (НЕ 0.5!)
     velocity.multiplyScalar(0.98)
   }
